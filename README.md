@@ -1,0 +1,175 @@
+<!-- TODO How to use this template
+Follow these commented instructions to build the repo.
+Delete the instructions as you go, to keep for a cleaner final file.
+ -->
+
+<!-- TODO Initialise the repo with the following two files:
+ The MicroPython Module for this device with name: "PiicoDev_[DEVICE MFN].py". Eg for temperature sensor TMP117: PiicoDev_TMP117.py
+ A (tested) main.py file
+-->
+
+
+<!-- TODO update title to be descriptive. Eg.
+PiicoDev® [Description] [Part#] MicroPython Module
+PiicoDev® Precision Temperature Sensor TMP117 MicroPython Module -->
+# PiicoDev® Template MicroPython Module
+
+<!-- TODO update link URL with CE SKU -->
+<!-- TODO update link title -->
+This is the firmware repo for the [Core Electronics PiicoDev® XXXXXX](https://core-electronics.com.au/catalog/product/view/sku/XXXXXX)
+
+This module depends on the [PiicoDev Unified Library](https://github.com/CoreElectronics/CE-PiicoDev-Unified), include `PiicoDev_Unified.py` in the project directory on your MicroPython device.
+
+<!-- TODO update tutorial link with the device tinyurl eg. piico.dev/p1
+See the [Quickstart Guide](https://piico.dev/pX)
+ -->
+
+<!-- TODO verify the tested-devices list -->
+This module has been tested on:
+ - Micro:bit v2
+ - Raspberry Pi Pico
+ - Raspberry Pi SBC
+
+## Details
+### `create_PiicoDev_SSD1306(bus=, freq=, sda=, scl=, addr=0x3C)`
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+bus | int | 0,1 | Raspberry Pi Pico: 0, Raspberry Pi: 1 | I2C Bus.  Ignored on Micro:bit
+freq | int | 100-1000000 | Device dependent | I2C Bus frequency (Hz).  Ignored on Raspberry Pi
+sda | Pin | Device Dependent | Device Dependent | I2C SDA Pin. Implemented on Raspberry Pi Pico only
+scl | Pin | Device Dependent | Device Dependent | I2C SCL Pin. Implemented on Raspberry Pi Pico only
+addr | int | 0x3C | 0x3C, 0x3D | This address needs to match the PiicoDev OLED SSD1306 hardware address configured by the jumper
+
+### `PiicoDev_SSD1306.show()`
+This command is required to send the image assembled using the commands below to the display for viewing.
+
+### `PiicoDev_SSD1306.fill(c)`
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+c | int | 0 - 1 | Fill the display with a single colour (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.pixel(x, y, c)`
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+x | int | 0 - 127 | X coordinate
+y | int | 0 - 63 | Y coordinate
+c | int | 0 - 1 | Set the specified pixel to the given color (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.hline(x, y, l, c)`
+Draw a horizontal line with a given length using the given colour and a thickness of 1 pixel.
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+x | int | 0 - 127 | X coordinate
+y | int | 0 - 63 | Y coordinate
+l | int | 1 - 128 | Length
+c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.vline(x, y, h, c)`
+Draw a vertical line with a given length using the given colour and a thickness of 1 pixel.
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+x | int | 0 - 127 | X coordinate
+y | int | 0 - 63 | Y coordinate
+l | int | 1 - 64 | Length
+c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.line(x1, y1, x2, y2, c)`
+Draw a line from a set of coordinates using the given colour and a thickness of 1 pixel up to a second set of coordinates.
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+x1 | int | 0 - 127 | X1 coordinate
+y1 | int | 0 - 63 | Y1 coordinate
+x2 | int | 0 - 127 | X2 coordinate
+y2 | int | 0 - 63 | Y2 coordinate
+c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.rect(x, y, w, h, c)`
+Draw a rectangle at the given location, size and color. Draws only a 1 pixel outline.
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+x | int | 0 - 127 | X coordinate
+y | int | 0 - 63 | Y coordinate
+w | int | 1 - 128 | Width
+h | int | 1 - 64 | Height
+c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.fill_rect(x, y, w, h, c)`
+Draw a rectangle at the given location, size and color. Draws both the outline and interior.
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+x | int | 0 - 127 | X coordinate
+y | int | 0 - 63 | Y coordinate
+w | int | 1 - 128 | Width
+h | int | 1 - 64 | Height
+c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.text(s, x, y, c=1)`
+Write text to the FrameBuffer using the the coordinates as the upper-left corner of the text.
+Dimensions are 8 x 8.  There is no way to change the font.
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+s | string | 16 characters max | | Text to display.  If the text is longer than 16 characters, it will be truncated.
+x | int | 0 - 127 | | X coordinate
+y | int | 0 - 127 | | Y coordinate
+c | int | 0 - 1 | 1 | Set the line to the given color (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.text(s, x, y, c=1)`
+Write text to the FrameBuffer using the the coordinates as the upper-left corner of the text.
+Dimensions are 8 x 8.  There is no way to change the font.
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+s | string | 16 characters max | | Text to display.  If the text is longer than 16 characters, it will be truncated.
+x | int | 0 - 127 | | X coordinate
+y | int | 0 - 127 | | Y coordinate
+c | int | 0 - 1 | 1 | Set the line to the given color (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.load_pbm(filename, c)`
+Load a pbm file to the FrameBuffer.
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+filename | string | | Image to display
+c | int | 0 - 1 | Only pixels with this colour will be drawn (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.scroll(xstep, ystep)` Raspberry Pi Pico & Pycom only
+Raspberry Pi Pico and Pycom only.  Shift the contents of the FrameBuffer by the given vector.  This may leave a footprint of the previous colors in the FrameBuffer.
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+xstep | int | 0 - 127 | X coordinate
+ystep | int | 0 - 63 | Y coordinate
+
+### `PiicoDev_SSD1306.blit(fbuf, x, y, key)` Raspberry Pi Pico & Pycom only
+Raspberry Pi Pico and Pycom only.  Draw another FrameBuffer on top of the current one at the given coordinates.  If key is specified then it should be a color integer and the corresponding color will be considered transparent: all pixels with that color value will not be drawn.
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+fbuf | FrameBuffer | 1024 bytes max  || Image to display
+x | int | 0 - 127 | | X coordinate
+y | int | 0 - 63 |  | Y coordinate
+key | int | 0 - 1 | -1 | Key
+
+### `PiicoDev_SSD1306.poweroff()`
+Turns off the display.
+
+### `PiicoDev_SSD1306.poweron()`
+Turns on the display.
+
+### `PiicoDev_SSD1306.setContrast(contrast)`
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+contrast | int | 0 - 255 | 255 | Set the contrast.
+
+### `PiicoDev_SSD1306.rotate(rotate)`
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+rotate | int | 0 - 1 | 1 | Rotate the image by 180 degrees (1: Normal, 0: Inverted).
+
+### `PiicoDev_SSD1306.invert(invert)`
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+invert | int | 0 - 1 | 0 | Invert the image so black is white and white is black (0: Normal, 1: Inverted).
+
+# License
+This project is open source - please review the LICENSE.md file for further licensing information.
+
+If you have any technical questions, or concerns about licensing, please contact technical support on the [Core Electronics forums](https://forum.core-electronics.com.au/).
+
+*\"PiicoDev\" and the PiicoDev logo are trademarks of Core Electronics Pty Ltd.*
