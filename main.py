@@ -39,6 +39,8 @@ display.fill(0)
 display.show()
 sleep_ms(delay)
 
+graph1 = display.graph2D
+
 print('Test Pattern Pixel Range')
 display.fill(0)
 display.pixel(0,0,1)
