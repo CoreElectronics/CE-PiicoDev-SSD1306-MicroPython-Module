@@ -130,12 +130,34 @@ Parameter | Type | Range | Description
 filename | string | | Image to display
 c | int | 0 - 1 | Only pixels with this colour will be drawn (0: Black, 1: White)
 
+### `PiicoDev_SSD1306.graph2D(originX, originY, width, height, minValue, maxValue, c, bgColour, bars)`
+A graph2D object will be drawn to a rectangular region specified by the origin, width, and height.
+This graph type is explicitly designed to draw time series data.
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+originX  | int | 0 - 127 | 0 | The x coordinate of the graph's origin (lower left corner).
+originY  | int | 0 - 63 | 63 | The y coordinate of the graph's origin (lower left corner).
+width    | int | 1-128 | 128 | The width, in pixels, of the graph's drawing area.
+height  	| int | 1-64 | 64 | The height, in pixels, of the graph's drawing area
+minValue	| int | | 0 | The value which will be mapped to the bottom edge.
+maxValue |	int | | 255 | The value which will be mapped to the upper edge.
+c        |	int | 0 - 1 | 1 | Colour value. (0: Black, 1: White)
+bars     | | | | Filled chart
+
+### `PiicoDev_SSD1306.updateGraph2D(graph, value)`
+Updates a 2D graph with a new value.
+Parameter | Type | Description
+--- | --- | ---
+graph	| graph | A graph2D object created graph2D
+value	| int | A new value to draw to the graph. This value will be drawn on the right edge and the oldest value will be deleted.
+
 ### `PiicoDev_SSD1306.scroll(xstep, ystep)` Raspberry Pi Pico & Pycom only
 Raspberry Pi Pico and Pycom only.  Shift the contents of the FrameBuffer by the given vector.  This may leave a footprint of the previous colors in the FrameBuffer.
 Parameter | Type | Range | Description
 --- | --- | --- | ---
 xstep | int | 0 - 127 | X coordinate
 ystep | int | 0 - 63 | Y coordinate
+
 
 ### `PiicoDev_SSD1306.blit(fbuf, x, y, key)` Raspberry Pi Pico & Pycom only
 Raspberry Pi Pico and Pycom only.  Draw another FrameBuffer on top of the current one at the given coordinates.  If key is specified then it should be a color integer and the corresponding color will be considered transparent: all pixels with that color value will not be drawn.
