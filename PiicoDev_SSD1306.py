@@ -149,74 +149,7 @@ if _SYSNAME == 'microbit' or _SYSNAME == 'Linux':
                                 if x_coordinate < WIDTH and y_coordinate < HEIGHT:
                                     self.pixel(x_coordinate, y_coordinate, c)
                                     
-            
-            class graph2D(colourFunctions, colourMaps):
 
-            ## @brief Initialisation routine for the glowbit.matrix.graph2D object.
-            #
-            # A graph2D object will be drawn to a rectangular region specified by the origin, width, and height.
-            #
-            # This graph type is explicitly designed to draw time series data.
-            #
-            # \param originX The x coordinate of the graph's origin (lower left corner).
-            # \param originY The y coordinate of the graph's origin (lower left corner).
-            # \param width The width, in pixels, of the graph's drawing area.
-            # \param height The height, in pixels, of the graph's drawing area
-            # \param minValue The value which will be mapped to the bottom edge.
-            # \param maxValue The value which will be mapped to the upper edge.
-            # \param colour A packed 32-bit GlowBit colour value. Used by the "Solid" colourmap, ignored by the "Rainbow" colourmap. Can also be accessed when writing custom colour map functions.
-            # \param bgColour A packed 32-bit GlowBit colour value which is drawn to the entire graph area prior to drawing the data.
-            # \param colourMap Either the string "Solid" or "Rainbow" or a pointer to a custom colour map function. Custom colour maps must take the parameters colourMap(self, index, minIndex, maxIndex).
-            # \param update If update=True then a call to updateGraph1D() will, in turn, call glowbit.pixelsShow() to update the physical LEDs.
-
-                def __init__(self, originX = 0, originY = 7, width = 8, height = 8, minValue=0, maxValue=255, colour = 0xFFFFFF, bgColour = 0x000000, colourMap = "Solid", update = False, filled = False, bars = False):
-                    self.minValue = minValue
-                    self.maxValue = maxValue
-                    self.originX = originX
-                    self.originY = originY
-                    self.width = width
-                    self.height = height
-                    self.colour = colour
-                    self.bgColour = bgColour
-                    self.update = update
-                    self.m = (1-height)/(maxValue-minValue)
-                    self.offset = originY-self.m*minValue
-                    self.bars = bars
-                    
-                    self.data = []
-                    
-                    if callable(colourMap) == True:
-                        self.colourMap = colourMap
-                    elif colourMap == "Solid":
-                        self.colourMap = self.colourMapSolid
-                    elif colourMap == "Rainbow":
-                        self.colourMap = self.colourMapRainbow
-    
-    ## @brief Updates a 2D graph with a new value.
-    # 
-    # \param graph A graph2D object created graph2D
-    # \param value A new value to draw to the graph. This value will be drawn on the right edge and the oldest value will be deleted.
-
-            def updateGraph2D(self, graph, value):
-                graph.data.insert(0,value)
-                if len(graph.data) > graph.width:
-                    graph.data.pop()
-                x = graph.originX+graph.width-1
-                m = graph.colourMap
-                self.drawRectangleFill(graph.originX, graph.originY-graph.height+1, graph.originX+graph.width-1, graph.originY, graph.bgColour)
-                for value in graph.data:
-                    y = round(graph.m*value + graph.offset)# + graph.originY
-                    if graph.bars == True:
-                        for idx in range(y, graph.originY+1):
-                            if x >= graph.originX and x < graph.originX+graph.width and idx <= graph.originY and idx > graph.originY-graph.height:
-                                self.pixelSet(self.remap(x,idx), m(idx, graph.originY, graph.originY+graph.height-1))
-                    else:
-                        if x >= graph.originX and x < graph.originX+graph.width and y <= graph.originY and y > graph.originY-graph.height:
-                            self.pixelSet(self.remap(x,y), m(y - graph.originY, graph.originY, graph.originY+graph.height-1))
-                    x -= 1
-                if graph.update == True:
-                    print("Calling pixelsShow()")
-                    self.pixelsShow()
 
 class PiicoDev_SSD1306(framebuf.FrameBuffer):
     def init_display(self):
@@ -318,6 +251,37 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
                     y_coordinate = byte * 8 // WIDTH
                     if x_coordinate < WIDTH and y_coordinate < HEIGHT:
                         self.pixel(x_coordinate, y_coordinate, c)
+                        
+    class graph2D:
+        def __init__(self, originX = 0, originY = HEIGHT-1, width = WIDTH, height = HEIGHT, minValue=0, maxValue=255, c = 1, bars = False):
+            self.minValue = minValue
+            self.maxValue = maxValue
+            self.originX = originX
+            self.originY = originY
+            self.width = width
+            self.height = height
+            self.c = c
+            self.m = (1-height)/(maxValue-minValue)
+            self.offset = originY-self.m*minValue
+            self.bars = bars
+            self.data = []
+
+    def updateGraph2D(self, graph, value):
+        graph.data.insert(0,value)
+        if len(graph.data) > graph.width:
+            graph.data.pop()
+        x = graph.originX+graph.width-1
+        m = graph.c
+        for value in graph.data:
+            y = round(graph.m*value + graph.offset)
+            if graph.bars == True:
+                for idx in range(y, graph.originY+1):
+                    if x >= graph.originX and x < graph.originX+graph.width and idx <= graph.originY and idx > graph.originY-graph.height:
+                        self.pixel(x,idx, m)
+            else:
+                if x >= graph.originX and x < graph.originX+graph.width and y <= graph.originY and y > graph.originY-graph.height:
+                    self.pixel(x,y, m)
+            x -= 1
 
 class PiicoDev_SSD1306_MicroPython(PiicoDev_SSD1306):
     def __init__(self, bus=None, freq=None, sda=None, scl=None, addr=0x3C):

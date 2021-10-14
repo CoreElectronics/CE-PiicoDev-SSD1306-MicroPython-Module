@@ -39,8 +39,6 @@ display.fill(0)
 display.show()
 sleep_ms(delay)
 
-graph1 = display.graph2D
-
 print('Test Pattern Pixel Range')
 display.fill(0)
 display.pixel(0,0,1)
@@ -187,3 +185,15 @@ if _SYSNAME == 'rp2' or _SYSNAME == 'LoPy4':
         display.show()
     display.text('PiicoDev',32,22,1)
     display.show()
+    
+graph1 = display.graph2D()
+graph2 = display.graph2D()
+sleep_ms(1000)
+for x in range(1000):
+    y = int(math.sin(x/10.0)*HEIGHT+HEIGHT+30)
+    z = int(math.cos(x/10.0)*HEIGHT+HEIGHT+30)
+    display.fill(0)
+    display.updateGraph2D(graph1,y)
+    display.updateGraph2D(graph2,z)
+    display.show()
+    sleep_ms(1)
