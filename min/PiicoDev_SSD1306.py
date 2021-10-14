@@ -1,7 +1,6 @@
-_E='Linux'
-_D='microbit'
-_C=True
-_B=False
+_D=False
+_C='Linux'
+_B='microbit'
 _A=None
 _SET_CONTRAST=129
 _SET_ENTIRE_ON=164
@@ -26,10 +25,10 @@ HEIGHT=64
 from PiicoDev_Unified import *
 compat_str='\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
 _SYSNAME=os.uname().sysname
-if _SYSNAME==_D:from microbit import *;from utime import sleep_ms;from ustruct import pack_into
-elif _SYSNAME==_E:from PIL import Image,ImageDraw,ImageFont;from struct import pack_into
+if _SYSNAME==_B:from microbit import *;from utime import sleep_ms;from ustruct import pack_into
+elif _SYSNAME==_C:from PIL import Image,ImageDraw,ImageFont;from struct import pack_into
 else:import framebuf
-if _SYSNAME==_D or _SYSNAME==_E:
+if _SYSNAME==_B or _SYSNAME==_C:
 	class framebuf:
 		class FrameBuffer:
 			def _set_pos(self,col=0,page=0):self.write_cmd(176|page);c1,c2=col*2&15,col>>3;self.write_cmd(0|c1);self.write_cmd(16|c2)
@@ -66,24 +65,6 @@ if _SYSNAME==_D or _SYSNAME==_E:
 							if fontDataPixelValues&1<<i!=0:
 								x_coordinate=x+col+text_index*8;y_coordinate=y+i
 								if x_coordinate<WIDTH and y_coordinate<HEIGHT:self.pixel(x_coordinate,y_coordinate,c)
-			class graph2D(colourFunctions,colourMaps):
-				def __init__(self,originX=0,originY=7,width=8,height=8,minValue=0,maxValue=255,colour=16777215,bgColour=0,colourMap='Solid',update=_B,filled=_B,bars=_B):
-					self.minValue=minValue;self.maxValue=maxValue;self.originX=originX;self.originY=originY;self.width=width;self.height=height;self.colour=colour;self.bgColour=bgColour;self.update=update;self.m=(1-height)/(maxValue-minValue);self.offset=originY-self.m*minValue;self.bars=bars;self.data=[]
-					if callable(colourMap)==_C:self.colourMap=colourMap
-					elif colourMap=='Solid':self.colourMap=self.colourMapSolid
-					elif colourMap=='Rainbow':self.colourMap=self.colourMapRainbow
-			def updateGraph2D(self,graph,value):
-				graph.data.insert(0,value)
-				if len(graph.data)>graph.width:graph.data.pop()
-				x=graph.originX+graph.width-1;m=graph.colourMap;self.drawRectangleFill(graph.originX,graph.originY-graph.height+1,graph.originX+graph.width-1,graph.originY,graph.bgColour)
-				for value in graph.data:
-					y=round(graph.m*value+graph.offset)
-					if graph.bars==_C:
-						for idx in range(y,graph.originY+1):
-							if x>=graph.originX and x<graph.originX+graph.width and idx<=graph.originY and idx>graph.originY-graph.height:self.pixelSet(self.remap(x,idx),m(idx,graph.originY,graph.originY+graph.height-1))
-					elif x>=graph.originX and x<graph.originX+graph.width and y<=graph.originY and y>graph.originY-graph.height:self.pixelSet(self.remap(x,y),m(y-graph.originY,graph.originY,graph.originY+graph.height-1))
-					x-=1
-				if graph.update==_C:print('Calling pixelsShow()');self.pixelsShow()
 class PiicoDev_SSD1306(framebuf.FrameBuffer):
 	def init_display(self):
 		self.width=WIDTH;self.height=HEIGHT;self.pages=HEIGHT//8;self.buffer=bytearray(self.pages*WIDTH)
@@ -95,11 +76,11 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
 	def rotate(self,rotate):self.write_cmd(_SET_COM_OUT_DIR|(rotate&1)<<3);self.write_cmd(_SET_SEG_REMAP|rotate&1)
 	def show(self):x0=0;x1=WIDTH-1;self.write_cmd(_SET_COL_ADDR);self.write_cmd(x0);self.write_cmd(x1);self.write_cmd(_SET_PAGE_ADDR);self.write_cmd(0);self.write_cmd(self.pages-1);self.write_data(self.buffer)
 	def write_cmd(self,cmd):
-		try:self.i2c.writeto_mem(self.addr,int.from_bytes(b'\x80','big'),bytes([cmd]));self.comms_err=_B
-		except:print(i2c_err_str.format(self.addr));self.comms_err=_C
+		try:self.i2c.writeto_mem(self.addr,int.from_bytes(b'\x80','big'),bytes([cmd]));self.comms_err=_D
+		except:print(i2c_err_str.format(self.addr));self.comms_err=True
 	def write_data(self,buf):
-		try:self.write_list[1]=buf;self.i2c.writeto_mem(self.addr,int.from_bytes(self.write_list[0],'big'),self.write_list[1]);self.comms_err=_B
-		except:print(i2c_err_str.format(self.addr));self.comms_err=_C
+		try:self.write_list[1]=buf;self.i2c.writeto_mem(self.addr,int.from_bytes(self.write_list[0],'big'),self.write_list[1]);self.comms_err=_D
+		except:print(i2c_err_str.format(self.addr));self.comms_err=True
 	def load_pbm(self,filename,c):
 		with open(filename,'rb')as f:f.readline();f.readline();f.readline();data_piicodev=bytearray(f.read())
 		for byte in range(WIDTH//8*HEIGHT):
@@ -107,6 +88,19 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
 				if data_piicodev[byte]&1<<bit!=0:
 					x_coordinate=(8-bit+byte*8)%WIDTH;y_coordinate=byte*8//WIDTH
 					if x_coordinate<WIDTH and y_coordinate<HEIGHT:self.pixel(x_coordinate,y_coordinate,c)
+	class graph2D:
+		def __init__(self,originX=0,originY=HEIGHT-1,width=WIDTH,height=HEIGHT,minValue=0,maxValue=255,c=1,bars=_D):self.minValue=minValue;self.maxValue=maxValue;self.originX=originX;self.originY=originY;self.width=width;self.height=height;self.c=c;self.m=(1-height)/(maxValue-minValue);self.offset=originY-self.m*minValue;self.bars=bars;self.data=[]
+	def updateGraph2D(self,graph,value):
+		graph.data.insert(0,value)
+		if len(graph.data)>graph.width:graph.data.pop()
+		x=graph.originX+graph.width-1;m=graph.c
+		for value in graph.data:
+			y=round(graph.m*value+graph.offset)
+			if graph.bars==True:
+				for idx in range(y,graph.originY+1):
+					if x>=graph.originX and x<graph.originX+graph.width and idx<=graph.originY and idx>graph.originY-graph.height:self.pixel(x,idx,m)
+			elif x>=graph.originX and x<graph.originX+graph.width and y<=graph.originY and y>graph.originY-graph.height:self.pixel(x,y,m)
+			x-=1
 class PiicoDev_SSD1306_MicroPython(PiicoDev_SSD1306):
 	def __init__(self,bus=_A,freq=_A,sda=_A,scl=_A,addr=60):self.i2c=create_unified_i2c(bus=bus,freq=freq,sda=sda,scl=scl);self.addr=addr;self.temp=bytearray(2);self.write_list=[b'@',_A];self.init_display();super().__init__(self.buffer,WIDTH,HEIGHT,framebuf.MONO_VLSB);self.fill(0);self.show()
 class PiicoDev_SSD1306_MicroBit(PiicoDev_SSD1306):
@@ -118,7 +112,7 @@ def create_PiicoDev_SSD1306(addr=60,bus=_A,freq=_A,sda=_A,scl=_A):
 		if compat_ind>=1:0
 		else:print(compat_str)
 	except:print(compat_str)
-	if _SYSNAME==_D:display=PiicoDev_SSD1306_MicroBit(addr=addr,freq=freq)
-	elif _SYSNAME==_E:display=PiicoDev_SSD1306_Linux(addr=addr,freq=freq)
+	if _SYSNAME==_B:display=PiicoDev_SSD1306_MicroBit(addr=addr,freq=freq)
+	elif _SYSNAME==_C:display=PiicoDev_SSD1306_Linux(addr=addr,freq=freq)
 	else:display=PiicoDev_SSD1306_MicroPython(addr=addr,bus=bus,freq=freq,sda=sda,scl=scl)
 	return display
