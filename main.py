@@ -7,9 +7,6 @@ from PiicoDev_Unified import sleep_ms
 
 display = create_PiicoDev_SSD1306()
 
-WIDTH=127 # Dimensions of the OLED (px)
-HEIGHT=63
-
 # Text and numbers
 for counter in range(0,101):
     display.fill(0)
@@ -46,8 +43,8 @@ sleep_ms(1000)
 
 # Bouncy Square animation
 square = 15   # square edge length (px)
-x = WIDTH/2   # starting position
-y = HEIGHT/2  # starting y position
+x = (WIDTH-1)/2   # starting position
+y = (HEIGHT-1)/2  # starting y position
 
 v = {'x': 2.3, # Starting velocity (pixels per animation frame)
      'y': 3.5}
@@ -72,10 +69,10 @@ while True:
     display.fill_rect(round(x), round(y), square, square, 1)
     
     # draw boundaries
-    display.line(0,0,WIDTH,0, 1)
-    display.line(0,0,0,HEIGHT, 1)
-    display.line(WIDTH,0,WIDTH,HEIGHT, 1)
-    display.line(0,HEIGHT,WIDTH,HEIGHT, 1)
+    display.hline(0,0,WIDTH,1)
+    display.vline(0,0,HEIGHT,1)
+    display.vline(WIDTH-1,0,HEIGHT, 1)
+    display.hline(0,HEIGHT-1,WIDTH, 1)
     
     # show the collision count
     display.text(str(collisionCount),10,round(HEIGHT/2), 1)
