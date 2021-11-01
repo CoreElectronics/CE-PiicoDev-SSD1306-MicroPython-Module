@@ -1,10 +1,11 @@
 # Circular path animation
 
 from PiicoDev_SSD1306 import *
+from PiicoDev_Unified import sleep_ms # cross-platform compatible sleep function
 from math import sin, cos
 display = create_PiicoDev_SSD1306()
 
-r = 20 # radius of the path
+r = 20 # radius of the path (px)
 
 theta = 0
 while True:
@@ -20,3 +21,5 @@ while True:
 #     display.line(round(WIDTH/2)+5, round(HEIGHT/2)+5, round(x+5), round(y+5), 1) # uncomment for a bonus!
     display.show()
     
+    
+#     sleep_ms(10) # sleep optional. Updating the display takes long enough
