@@ -9,8 +9,10 @@ r = 20 # radius of the path (px)
 
 theta = 0
 while True:
-    display.fill(0)
+    ### Clear the display ###
+    display.fill(0) 
     
+    ### Draw a frame ###    
     theta = theta + 0.02 # increment theta by a small amount
     
     # convert polar coordinates (r, theta) to cartesian coordinates (x, y)
@@ -19,7 +21,9 @@ while True:
     
     display.fill_rect(round(x), round(y), 10, 10, 1)
 #     display.line(round(WIDTH/2)+5, round(HEIGHT/2)+5, round(x+5), round(y+5), 1) # uncomment for a bonus!
-    display.show()
+
     
+    ### Update display ###
+    display.show()
     
 #     sleep_ms(10) # sleep optional. Updating the display takes long enough
