@@ -8,6 +8,9 @@
 # 2021-07-15:
 # https://github.com/adafruit/Adafruit_Python_SSD1306/blob/master/Adafruit_SSD1306/SSD1306.py
 
+# 2021 OCT 14 - Initial release
+# 2022 JAN 04 - Remove dependency on PIL module.  Improve compatibility with pbm files.
+
 _SET_CONTRAST = 0x81
 _SET_ENTIRE_ON = 0xA4
 _SET_NORM_INV = 0xA6
@@ -40,9 +43,6 @@ if _SYSNAME == 'microbit':
     from utime import sleep_ms
     from ustruct import pack_into
 elif _SYSNAME == 'Linux':
-    from PIL import Image
-    from PIL import ImageDraw
-    from PIL import ImageFont
     from struct import pack_into
 else:
     import framebuf
@@ -240,9 +240,13 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
             
     def load_pbm(self, filename, c):
         with open(filename, 'rb') as f:
-            f.readline()
-            f.readline()
-            f.readline()
+            line = f.readline()
+            if line.startswith(b'P4') is False:
+                print('Not a valid pbm P4 file')
+                return
+            line = f.readline()
+            while line.startswith(b'#') is True:
+                line = f.readline()
             data_piicodev = bytearray(f.read())
         for byte in range(WIDTH // 8 * HEIGHT):
             for bit in range(8):
@@ -310,8 +314,6 @@ class PiicoDev_SSD1306_Linux(PiicoDev_SSD1306):
         self.addr = addr
         self.temp = bytearray(2)
         self.write_list = [b'\x40', None]  # Co=0, D/C#=1
-        self.image = Image.new('1', (WIDTH, HEIGHT))
-        self.draw = ImageDraw.Draw(self.image)
         self.init_display()
         self.fill(0)
         self.show()
