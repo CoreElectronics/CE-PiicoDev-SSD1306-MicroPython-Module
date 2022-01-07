@@ -251,8 +251,8 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
     def arc(self,x,y,r,stang,enang,t):
         for i in range(r*t-1,r):
             for ta in range(stang,enang,1):
-                X = int(i*cos(radians(ta))+ x/2)
-                Y = int(i*sin(radians(ta)) + y/2)
+                X = int(i*cos(radians(ta))+ x)
+                Y = int(i*sin(radians(ta)) + y)
                 self.pixel(X,Y,1)    
             
     def load_pbm(self, filename, c):
