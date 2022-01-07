@@ -86,7 +86,7 @@ w | int | 1 - 128 | Width
 h | int | 1 - 64 | Height
 c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
 
-### `PiicoDev_SSD1306.circle(x, y, r, t)`
+### `PiicoDev_SSD1306.circ(x, y, r, t)`
 Draw a circle at the given location, with radius and set thickness. Thickness is defined as a percentage from the circumfrence.
 Parameter | Type | Range | Description
 --- | --- | --- | ---
