@@ -86,6 +86,26 @@ w | int | 1 - 128 | Width
 h | int | 1 - 64 | Height
 c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
 
+### `PiicoDev_SSD1306.circle(x, y, r, t)`
+Draw a circle at the given location, with radius and set thickness. Thickness is defined as a percentage from the circumfrence.
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+x | int | 0 - 127 | X coordinate
+y | int | 0 - 63 | Y coordinate
+r | int | 0 - 144 | Radius of the circle
+t | float | 0.0 - 1.0
+
+### `PiicoDev_SSD1306.arc(x, y, r, stang, enang, t)`
+Draw an arc at the given location, with radius, start angle, end angle and set thickness. Thickness is defined as a percentage from the circumfrence.
+Parameter | Type | Range | Description
+--- | --- | --- | ---
+x | int | 0 - 127 | X coordinate
+y | int | 0 - 63 | Y coordinate
+r | int | 0 - 144 | Radius of the arc
+stang | int | 0 - 359| Starting angle of the arc, must be less than the ending angle
+enang | int | 1 - 360| Ending angle of the arc, must be greater than the starting angle
+t | float | 0.0 - 1.0
+
 ### `PiicoDev_SSD1306.text(s, x, y, c=1)`
 Write text to the FrameBuffer using the the coordinates as the upper-left corner of the text.  
 Dimensions are 8 x 8.  There is no way to change the font.
