@@ -33,6 +33,7 @@ WIDTH = 128
 HEIGHT = 64
 
 from PiicoDev_Unified import *
+from math import cos,sin,radians
 
 compat_str = '\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
 
@@ -148,9 +149,8 @@ if _SYSNAME == 'microbit' or _SYSNAME == 'Linux':
                                 y_coordinate = y+i
                                 if x_coordinate < WIDTH and y_coordinate < HEIGHT:
                                     self.pixel(x_coordinate, y_coordinate, c)
-                                    
-
-
+    
+    
 class PiicoDev_SSD1306(framebuf.FrameBuffer):
     def init_display(self):
         self.width = WIDTH
@@ -237,6 +237,23 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
         except:
             print(i2c_err_str.format(self.addr))
             self.comms_err = True
+            
+    def circ(self,x,y,r,t=1,c=1):
+        for i in range(x-r,x+r+1):
+            for j in range(y-r,y+r+1):
+                if t==1:
+                    if((i-x)**2 + (j-y)**2 < r**2):
+                        self.pixel(i,j,1)
+                else:
+                    if((i-x)**2 + (j-y)**2 < r**2) and ((i-x)**2 + (j-y)**2 >= (r-r*t-1)**2):
+                        self.pixel(i,j,c)
+                   
+    def arc(self,x,y,r,stAng,enAng,t=0,c=1):
+        for i in range(r*(1-t)-1,r):
+            for ta in range(stAng,enAng,1):
+                X = int(i*cos(radians(ta))+ x)
+                Y = int(i*sin(radians(ta))+ y)
+                self.pixel(X,Y,c)
             
     def load_pbm(self, filename, c):
         with open(filename, 'rb') as f:
