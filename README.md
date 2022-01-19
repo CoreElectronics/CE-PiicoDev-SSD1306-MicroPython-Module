@@ -96,7 +96,7 @@ r | int | 0 - 144 | Radius of the circle
 t | float | 0.0 - 1.0 | How filled the circle is, starting from the outer edge, 0 being a line and 1 being fully filled
 c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
 
-### `PiicoDev_SSD1306.arc(x, y, r, stang, enang, t, c)`
+### `PiicoDev_SSD1306.arc(x, y, r, stAng, enAng, t, c)`
 Draw an arc at the given location, with radius, start angle, end angle and set thickness.
 Parameter | Type | Range | Description
 --- | --- | --- | ---
@@ -107,17 +107,6 @@ stAng | int | 0 - 359| Starting angle of the arc, must be less than the ending a
 enAng | int | 1 - 360| Ending angle of the arc, must be greater than the starting angle
 t | float | 0.0 - 1.0 | How filled the arc is, starting from the outer edge, 0 being a line and 1 being fully filled
 c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
-
-### `PiicoDev_SSD1306.text(s, x, y, c=1)`
-Write text to the FrameBuffer using the the coordinates as the upper-left corner of the text.  
-Dimensions are 8 x 8.  There is no way to change the font.
-
-Parameter | Type | Range | Default | Description
---- | --- | --- | --- | ---
-s | string | 16 characters max | | Text to display.  If the text is longer than 16 characters, it will be truncated.
-x | int | 0 - 127 | | X coordinate
-y | int | 0 - 127 | | Y coordinate
-c | int | 0 - 1 | 1 | Set the line to the given color (0: Black, 1: White)
 
 ### `PiicoDev_SSD1306.text(s, x, y, c=1)`
 Write text to the FrameBuffer using the the coordinates as the upper-left corner of the text.  
