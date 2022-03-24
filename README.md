@@ -108,8 +108,25 @@ enAng | int | 1 - 360| Ending angle of the arc, must be greater than the startin
 t | float | 0.0 - 1.0 | How filled the arc is, starting from the outer edge, 0 being a line and 1 being fully filled
 c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
 
+### `PiicoDev_SSD1306.print(n, s, c=1)`
+Write text where n is the line number.
+
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+x | int | 0 - 6 | | Line number
+s | string | 16 characters max | | Text to display.  If the text is longer than 16 characters, it will be truncated.
+c | int | 0 - 1 | 1 | Set the line to the given color (0: Black, 1: White)
+
+### `PiicoDev_SSD1306.printConsole(s, c=1)`
+Write text to bottom line of the display.  Existing text will be scrolled upward.
+
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+s | string | 16 characters max | | Text to display.  If the text is longer than 16 characters, it will be truncated.
+c | int | 0 - 1 | 1 | Set the line to the given color (0: Black, 1: White)
+
 ### `PiicoDev_SSD1306.text(s, x, y, c=1)`
-Write text to the FrameBuffer using the the coordinates as the upper-left corner of the text.  
+Write text to an arbitrary position using the the coordinates as the upper-left corner of the text.  
 Dimensions are 8 x 8.  There is no way to change the font.
 
 Parameter | Type | Range | Default | Description
