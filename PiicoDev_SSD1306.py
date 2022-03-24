@@ -10,6 +10,8 @@
 
 # 2021 OCT 14 - Initial release
 # 2022 JAN 04 - Remove dependency on PIL module.  Improve compatibility with pbm files.
+# 2022 JAN 11 - Add circ and arc methods.
+# 2022 MAR 25 - Add print and printConsole methods
 
 _SET_CONTRAST = 0x81
 _SET_ENTIRE_ON = 0xA4
@@ -149,14 +151,16 @@ if _SYSNAME == 'microbit' or _SYSNAME == 'Linux':
                                 y_coordinate = y+i
                                 if x_coordinate < WIDTH and y_coordinate < HEIGHT:
                                     self.pixel(x_coordinate, y_coordinate, c)
-    
-    
+
 class PiicoDev_SSD1306(framebuf.FrameBuffer):
     def init_display(self):
         self.width = WIDTH
         self.height = HEIGHT
         self.pages = HEIGHT // 8
         self.buffer = bytearray(self.pages * WIDTH)
+        self.text_line_buf = []
+        for x in range(0, 8):
+            self.text_line_buf.append('')
         for cmd in (
             _SET_DISP,  # display off
             # address setting
@@ -303,6 +307,27 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
                 if x >= graph.originX and x < graph.originX+graph.width and y <= graph.originY and y > graph.originY-graph.height:
                     self.pixel(x,y, m)
             x -= 1
+
+    def print(self, n, string, c=1):
+        assert n >= 0 and n <= 6, 'line number should be between 0 and 6'
+        LINE_HEIGHT = 9
+        width_prev = len(self.text_line_buf[n]) * 8
+        width = len(string) * 8
+        if width_prev > width:
+            width = width_prev
+        if c == 1:
+            self.fill_rect(0, n*LINE_HEIGHT, width, LINE_HEIGHT, 0)
+        if c == 0:
+            self.fill_rect(0, n*LINE_HEIGHT, width, LINE_HEIGHT, 1)
+        self.text(string, 0, n*LINE_HEIGHT, c)
+        self.text_line_buf[n] = string
+    
+    def printConsole(self, string, c=1):
+        self.fill(0)
+        for x in range(0, 6):
+            self.text_line_buf[x] = self.text_line_buf[x+1]
+            self.print(x, self.text_line_buf[x])
+        self.print(6, string)  
 
 class PiicoDev_SSD1306_MicroPython(PiicoDev_SSD1306):
     def __init__(self, bus=None, freq=None, sda=None, scl=None, addr=0x3C):
