@@ -335,7 +335,10 @@ class PiicoDev_SSD1306_Linux(PiicoDev_SSD1306):
         self.fill(0)
         self.show()
                         
-def create_PiicoDev_SSD1306(addr=0x3C,bus=None, freq=None, sda=None, scl=None):
+def create_PiicoDev_SSD1306(address=0x3C,bus=None, freq=None, sda=None, scl=None, asw=None):
+    if asw == 0: _a = 0x3C
+    elif asw == 1: _a = 0x3D
+    else: _a = address # parse desired address from direct address input or asw switch position (0 or 1)
     try:
         if compat_ind >= 1:
             pass
@@ -344,9 +347,9 @@ def create_PiicoDev_SSD1306(addr=0x3C,bus=None, freq=None, sda=None, scl=None):
     except:
         print(compat_str)
     if _SYSNAME == 'microbit':
-        display = PiicoDev_SSD1306_MicroBit(addr=addr, freq=freq)
+        display = PiicoDev_SSD1306_MicroBit(addr=_a, freq=freq)
     elif _SYSNAME == 'Linux':
-        display = PiicoDev_SSD1306_Linux(addr=addr, freq=freq)
+        display = PiicoDev_SSD1306_Linux(addr=_a, freq=freq)
     else:
-        display = PiicoDev_SSD1306_MicroPython(addr=addr, bus=bus, freq=freq, sda=sda, scl=scl)
+        display = PiicoDev_SSD1306_MicroPython(addr=_a, bus=bus, freq=freq, sda=sda, scl=scl)
     return display
