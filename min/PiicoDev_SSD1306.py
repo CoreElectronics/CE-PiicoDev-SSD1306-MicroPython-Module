@@ -123,12 +123,15 @@ class PiicoDev_SSD1306_MicroBit(PiicoDev_SSD1306):
 	def __init__(self,bus=_A,freq=_A,sda=_A,scl=_A,addr=60):self.i2c=create_unified_i2c(bus=bus,freq=freq,sda=sda,scl=scl);self.addr=addr;self.temp=bytearray(2);self.write_list=[b'@',_A];self.init_display();self.fill(0);self.show()
 class PiicoDev_SSD1306_Linux(PiicoDev_SSD1306):
 	def __init__(self,bus=_A,freq=_A,sda=_A,scl=_A,addr=60):self.i2c=create_unified_i2c(bus=bus,freq=freq,sda=sda,scl=scl);self.addr=addr;self.temp=bytearray(2);self.write_list=[b'@',_A];self.init_display();self.fill(0);self.show()
-def create_PiicoDev_SSD1306(addr=60,bus=_A,freq=_A,sda=_A,scl=_A):
+def create_PiicoDev_SSD1306(address=60,bus=_A,freq=_A,sda=_A,scl=_A,asw=_A):
+	if asw==0:_a=60
+	elif asw==1:_a=61
+	else:_a=address
 	try:
 		if compat_ind>=1:0
 		else:print(compat_str)
 	except:print(compat_str)
-	if _SYSNAME==_D:display=PiicoDev_SSD1306_MicroBit(addr=addr,freq=freq)
-	elif _SYSNAME==_E:display=PiicoDev_SSD1306_Linux(addr=addr,freq=freq)
-	else:display=PiicoDev_SSD1306_MicroPython(addr=addr,bus=bus,freq=freq,sda=sda,scl=scl)
+	if _SYSNAME==_D:display=PiicoDev_SSD1306_MicroBit(addr=_a,freq=freq)
+	elif _SYSNAME==_E:display=PiicoDev_SSD1306_Linux(addr=_a,freq=freq)
+	else:display=PiicoDev_SSD1306_MicroPython(addr=_a,bus=bus,freq=freq,sda=sda,scl=scl)
 	return display
