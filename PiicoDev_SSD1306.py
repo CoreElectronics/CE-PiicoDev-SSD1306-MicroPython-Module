@@ -192,6 +192,7 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
             _SET_DISP | 0x01,  # display on
         ):  # on
             self.write_cmd(cmd)
+            self._init_print_text = False
 
     def poweroff(self):
         self.write_cmd(_SET_DISP)
@@ -237,6 +238,66 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
         except:
             print(i2c_err_str.format(self.addr))
             self.comms_err = True
+            
+        
+    def _init_print_text_func(self,spacing,font_size):
+        
+        self.line_cnt = HEIGHT-spacing[1]//(8+spacing[2])
+        self.disp_lst = [None]* self.line_cnt #how many lines can be fully shown(64-spacing[1]//(8+spacing[2])
+        self.temp_display_lst = [None]* self.line_cnt
+        self.font_height = font_size[1]
+        for i in len(self.disp_list):
+            self.line_y_coord = [1]* HEIGHT-(spacing[1] + font_size_y)-(i*(font_size_y+spacing[2])) # Reduces processor burden
+        self._init_print_text = True
+            
+    def draw_print_text(self,draw_text_list,font_size_y,spacing,c):
+        self.temp_display_lst = [None]* self.line_cnt # Clear temp list
+        self.fill(0)
+        for i in range(self.line_cnt):
+            self.text(self.temp_display_lst,spacing[0],self.line_y_coord[i],c)
+        self.show()
+        
+    
+    def print(self,txt,c=1,line_num=None,auto_scroll=True,delim=True,font_size=[8,8],spacing=[0,0,0]): 
+        ''' Prints up to 15 characters on a new line of the OLED, more characters will flow on to a new line, repeated calls will increment the line counter'''
+        # line num - optional argument to manually specify the line number to be printed on, takes prio over auto incremented lines (allows them to be blanked, does not overwrite the text buffer)
+        # auto_scroll - does the text auto-scroll
+        # Delim, will a delimiting character move that 'word' to the next line
+        # Font size - [x,y] dimensions of the characters
+        #Spacing is formatted as [starting-x,starting-y, y-spacing(bottom to top of char), ]
+        
+        if not self._init_print_text:
+            self._init_print_text_func(spacing,font_size)
+        
+        
+        if auto_scroll:
+            # Do auto scroll stuff here
+            
+            # Format text if over 15 chars
+            
+            if len(txt) > 15:
+                print('not yet implemented, truncating')
+                #move chars over
+            else:
+                #Inserts text
+                
+            self.temp_display_lst = self.disp_lst
+            
+        # Manual text inseration stuff here
+        if not auto_scroll and (0< line_num <self.line_cnt):
+             self.temp_display_lst[lin_num] = txt
+        
+        
+        self.print_text(font_size[1],spacing,c)
+        
+        
+        
+        
+        
+    
+    
+    
+    
             
     def circ(self,x,y,r,t=1,c=1):
         for i in range(x-r,x+r+1):
