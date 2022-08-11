@@ -71,7 +71,7 @@ Parameter | Type | Range | Default | Description
 --- | --- | --- | --- | ---
 txt | string | Dependent | | Text to display.
 c | int | 0 - 1 | 1 | The colour of the printed text
-line_num | int | 0 - 8 (Dependent) | | Optional: Prints on the requested line
+line_num | int | 0 - 8 (Dependent) | 0 | Optional: Prints on the requested line, default scrolls the text upwards
 blanking | bool | True/False | True | When enabled each print() call redraws the display
 delim | int | 0 - 16 | 1 | Set = 0/False to disable Delimiting
 font_size | list of Integers | [1 - Font Width,1 - Font Height] | [8,8] | Used in calculations for the line spacing
