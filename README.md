@@ -72,10 +72,10 @@ Parameter | Type | Range | Default | Description
 txt | string | Dependent | | Text to display.
 c | int | 0 - 1 | 1 | The colour of the printed text
 line_num | int | 0 - 8 (Dependent) | | Optional: Prints on the requested line
-auto_scroll | Bool | True/False | True | If the print function should autoscroll, must be used in conjunction with line_num
-delim | Bool | True/False | True | Automatically cariage returns if a line will overflow 16 characters
-font_size | List of Integers | [1 - Display Width,1 - Display Height] | [8,8] | Used in calculations for the line spacing
-spacing | List of Integers | [X-Starting Point, Y-Starting Point, Y-Spacing] | [0,0,0] | [X Starting Coordinate for all strings, Y Starting Coordinate for the first text write, Vertical spacing between Characters ]
+blanking | bool | True/False | True | When enabled each print() call redraws the display
+delim | int | 0 - 16 | 1 | Set = 0/False to disable Delimiting
+font_size | list of Integers | [1 - Font Width,1 - Font Height] | [8,8] | Used in calculations for the line spacing
+spacing | list of Integers | [X-Starting Point, Y-Starting Point, Y-Spacing] | [0,0,0] | [X Starting Coordinate for all strings, Y Starting Coordinate for the first text write, Vertical spacing between Characters ]
 
 
 ### `PiicoDev_SSD1306.rect(x, y, w, h, c)`
