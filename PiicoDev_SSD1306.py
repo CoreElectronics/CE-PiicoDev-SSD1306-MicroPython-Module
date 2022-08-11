@@ -58,14 +58,14 @@ if _SYSNAME == 'microbit' or _SYSNAME == 'Linux':
                 c1, c2 = col * 2 & 0x0F, col >> 3
                 self.write_cmd(0x00 | c1)  # lower start column address
                 self.write_cmd(0x10 | c2)  # upper start column address
-                
+
             def fill(self, c=0):
                 for i in range(0, 1024):
                     if c > 0:
                         self.buffer[i] = 0xFF
                     else:
                         self.buffer[i] = 0x00
-                        
+
             def pixel(self, x, y, color):
                 x = x & (WIDTH - 1)
                 y = y & (HEIGHT - 1)
@@ -78,17 +78,17 @@ if _SYSNAME == 'microbit' or _SYSNAME == 'Linux':
             def line(self, x1, y1, x2, y2, c):
                 # bresenham
                 steep = abs(y2-y1) > abs(x2-x1)
-                
+
                 if steep:
                     # Swap x/y
                     tmp = x1
                     x1 = y1
                     y1 = tmp
-                    
+
                     tmp = y2
                     y2 = x2
                     x2 = tmp
-                
+
                 if x1 > x2:
                     # Swap start/end
                     tmp = x1
@@ -97,12 +97,12 @@ if _SYSNAME == 'microbit' or _SYSNAME == 'Linux':
                     tmp = y1
                     y1 = y2
                     y2 = tmp
-                
+
                 dx = x2 - x1;
                 dy = abs(y2-y1)
-                
+
                 err = dx/2
-                
+
                 if(y1 < y2):
                     ystep = 1
                 else:
@@ -118,23 +118,23 @@ if _SYSNAME == 'microbit' or _SYSNAME == 'Linux':
                         y1 += ystep
                         err += dx
                     x1 += 1        
-         
+
             def hline(self, x, y, l, c):
                 self.line(x, y, x + l, y, c)
-                
+
             def vline(self, x, y, h, c):
                 self.line(x, y, x, y + h, c)
-                
+
             def rect(self, x, y, w, h, c):
                 self.hline(x, y, w, c)
                 self.hline(x, y+h, w, c)
                 self.vline(x, y, h, c)
                 self.vline(x+w, y, h, c)
-                          
+
             def fill_rect(self, x, y, w, h, c):
                 for i in range(y, y + h):
                     self.hline(x, i, w, c)
-                    
+
             def text(self, text, x, y, c=1):
                 fontFile = open("font-pet-me-128.dat", "rb")
                 font = bytearray(fontFile.read())
@@ -149,8 +149,8 @@ if _SYSNAME == 'microbit' or _SYSNAME == 'Linux':
                                 y_coordinate = y+i
                                 if x_coordinate < WIDTH and y_coordinate < HEIGHT:
                                     self.pixel(x_coordinate, y_coordinate, c)
-    
-    
+
+
 class PiicoDev_SSD1306(framebuf.FrameBuffer):
     def init_display(self):
         self.width = WIDTH
@@ -221,7 +221,7 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
         self.write_cmd(0)
         self.write_cmd(self.pages - 1)
         self.write_data(self.buffer)
-        
+
     def write_cmd(self, cmd):
         try:
             self.i2c.writeto_mem(self.addr, int.from_bytes(b'\x80','big'), bytes([cmd]))
@@ -229,7 +229,7 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
         except:
             print(i2c_err_str.format(self.addr))
             self.comms_err = True
-            
+
     def write_data(self, buf):
         try:
             self.write_list[1] = buf
@@ -238,60 +238,68 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
         except:
             print(i2c_err_str.format(self.addr))
             self.comms_err = True
-            
-        
+
+    @property
+    def displaySize(self):
+        return [self.width,self.height]
+
     def _init_print_text_func(self,spacing,font_size):
         self.line_cnt = (HEIGHT-spacing[1])//(8+spacing[2])
-        self.disp_lst = ['']* self.line_cnt 
-        self.temp_display_lst = ['']* self.line_cnt
+        self.disp_lst = [['',1]]* self.line_cnt
+        self.temp_display_lst = [['',1]]* self.line_cnt
         self.font_height = font_size[1]
         self.line_y_coord = [None]* self.line_cnt
+        self.font_size = font_size
         for i in range(self.line_cnt):
-            self.line_y_coord[i] = HEIGHT-(spacing[1] + font_size[1])-(i*(font_size[1]+spacing[2])) # Reduces processor burden
-        self._init_print_text = True     
-        
-    def draw_print_text(self,font_size_y,spacing,c):
-        self.fill(0)
-        for i in range(self.line_cnt):
-            self.text(self.temp_display_lst[i],spacing[0],self.line_y_coord[i],c)
-        self.show()
-        self.temp_display_lst = ['']* self.line_cnt
-        self.disp_lst = self.disp_lst[:8]        
+            self.line_y_coord[i] = spacing[1] + (font_size[1] + spacing[2])*i # Reduces processor burden
+        self._init_print_text = True
+        return self.line_y_coord
 
-    def trunctate_text(self,txt,delim):
-        if len(txt):
-            find_val= txt.rfind(' ',0,15)
+    def draw_print_text(self,font_size_y,spacing,blanking):
+        if blanking:
+            self.fill(0)
+        for i in range(1,self.line_cnt+1):
+            self.text(self.temp_display_lst[-i][0],spacing[0],self.line_y_coord[self.line_cnt-i],self.temp_display_lst[-i][1])
+        if blanking:
+            self.show()
+        self.temp_display_lst = [['',1]]* self.line_cnt
+        self.disp_lst = self.disp_lst[-self.line_cnt:]
+
+    def trunctate_text(self,txt,delim,c):
+        if len(txt) > 15:
+            find_val= txt.rfind(' ',delim,15)
             if delim and find_val is not -1:
                 [disp,to_disp] = [txt[0:find_val],txt[(find_val):].strip()]
             else:
                 [disp,to_disp] = [txt[0:15],txt[15:]]
-            self.disp_lst.insert(0,disp)
-            self.trunctate_text(to_disp,delim)
+            self.disp_lst.append([disp,c])
+            self.trunctate_text(to_disp,delim,c)
+        else:
+            self.disp_lst.append([txt,c])
 
-    def print(self,txt='',c=1,line_num=None,auto_scroll=True,delim=True,font_size=[8,8],spacing=[0,0,0]): 
+    def print(self,txt='',c=1,line_num=None,blanking=True,delim=True,font_size=[8,8],spacing=[0,0,0]): 
         ''' Prints up to 15 characters on a new line of the OLED, more characters will flow on to a new line, repeated calls will increment the line counter'''
         # line num - optional argument to manually specify the line number to be printed on, takes prio over auto incremented lines (allows them to be blanked, does not overwrite the text buffer)
         # auto_scroll - does the text auto-scroll
         # Delim, will a delimiting character move that 'word' to the next line
         # Font size - [x,y] dimensions of the characters
         #Spacing is formatted as [starting-x,starting-y, y-spacing(bottom to top of char), ]
-        
+
         if not self._init_print_text:
             self._init_print_text_func(spacing,font_size)
-        
-        if auto_scroll:
+        if isinstance(txt,float) or isinstance(txt,int):
+            txt = str(txt)
+        if delim and not line_num:
             if len(txt) > 15:
-                self.trunctate_text(txt,delim)
+                self.trunctate_text(txt,delim,c)
             else:
-                self.disp_lst.insert(0,txt)
-        self.temp_display_lst = self.disp_lst      
-        if not auto_scroll and (0< line_num <= self.line_cnt):
-             self.temp_display_lst[line_num-1] = txt
-        elif not auto_scroll and not (0> line_num < self.line_cnt):
+                self.disp_lst.append([txt,c])
+        self.temp_display_lst = self.disp_lst
+        if line_num is not None and (0< line_num <= self.line_cnt):
+             self.temp_display_lst[line_num-1] = [txt,c]
+        elif line_num is not None and not (0< line_num <= self.line_cnt):
             print('line_num out of range, max is {}'.format(self.line_cnt))
-        
-        
-        self.draw_print_text(font_size[1],spacing,c)
+        self.draw_print_text(font_size[1],spacing,blanking)
 
     def circ(self,x,y,r,t=1,c=1):
         for i in range(x-r,x+r+1):
@@ -302,14 +310,14 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
                 else:
                     if((i-x)**2 + (j-y)**2 < r**2) and ((i-x)**2 + (j-y)**2 >= (r-r*t-1)**2):
                         self.pixel(i,j,c)
-                   
+
     def arc(self,x,y,r,stAng,enAng,t=0,c=1):
         for i in range(r*(1-t)-1,r):
             for ta in range(stAng,enAng,1):
                 X = int(i*cos(radians(ta))+ x)
                 Y = int(i*sin(radians(ta))+ y)
                 self.pixel(X,Y,c)
-            
+
     def load_pbm(self, filename, c):
         with open(filename, 'rb') as f:
             line = f.readline()
@@ -327,7 +335,7 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
                     y_coordinate = byte * 8 // WIDTH
                     if x_coordinate < WIDTH and y_coordinate < HEIGHT:
                         self.pixel(x_coordinate, y_coordinate, c)
-                        
+
     class graph2D:
         def __init__(self, originX = 0, originY = HEIGHT-1, width = WIDTH, height = HEIGHT, minValue=0, maxValue=255, c = 1, bars = False):
             self.minValue = minValue
@@ -369,7 +377,7 @@ class PiicoDev_SSD1306_MicroPython(PiicoDev_SSD1306):
         super().__init__(self.buffer, WIDTH, HEIGHT, framebuf.MONO_VLSB)
         self.fill(0)
         self.show()
-        
+
 class PiicoDev_SSD1306_MicroBit(PiicoDev_SSD1306):
     def __init__(self, bus=None, freq=None, sda=None, scl=None, addr=0x3C):
         self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
@@ -389,7 +397,7 @@ class PiicoDev_SSD1306_Linux(PiicoDev_SSD1306):
         self.init_display()
         self.fill(0)
         self.show()
-                        
+
 def create_PiicoDev_SSD1306(address=0x3C,bus=None, freq=None, sda=None, scl=None, asw=None):
     if asw == 0: _a = 0x3C
     elif asw == 1: _a = 0x3D
