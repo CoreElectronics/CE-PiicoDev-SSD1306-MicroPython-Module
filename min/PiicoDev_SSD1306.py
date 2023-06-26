@@ -23,11 +23,11 @@ _SET_VCOM_DESEL=219
 _SET_CHARGE_PUMP=141
 WIDTH=128
 HEIGHT=64
-from PiicoDev_Unified import *
+from PiicoDev_Unified import*
 from math import cos,sin,radians
 compat_str='\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
 _SYSNAME=os.uname().sysname
-if _SYSNAME==_D:from microbit import *;from utime import sleep_ms;from ustruct import pack_into
+if _SYSNAME==_D:from microbit import*;from utime import sleep_ms;from ustruct import pack_into
 elif _SYSNAME==_E:from struct import pack_into
 else:import framebuf
 if _SYSNAME==_D or _SYSNAME==_E:
@@ -70,7 +70,7 @@ if _SYSNAME==_D or _SYSNAME==_E:
 class PiicoDev_SSD1306(framebuf.FrameBuffer):
 	def init_display(self):
 		self.width=WIDTH;self.height=HEIGHT;self.pages=HEIGHT//8;self.buffer=bytearray(self.pages*WIDTH)
-		for cmd in (_SET_DISP,_SET_MEM_ADDR,0,_SET_DISP_START_LINE,_SET_SEG_REMAP|1,_SET_MUX_RATIO,HEIGHT-1,_SET_COM_OUT_DIR|8,_SET_DISP_OFFSET,0,_SET_COM_PIN_CFG,18,_SET_DISP_CLK_DIV,128,_SET_PRECHARGE,241,_SET_VCOM_DESEL,48,_SET_CONTRAST,255,_SET_ENTIRE_ON,_SET_NORM_INV,_SET_IREF_SELECT,48,_SET_CHARGE_PUMP,20,_SET_DISP|1):self.write_cmd(cmd)
+		for cmd in(_SET_DISP,_SET_MEM_ADDR,0,_SET_DISP_START_LINE,_SET_SEG_REMAP|1,_SET_MUX_RATIO,HEIGHT-1,_SET_COM_OUT_DIR|8,_SET_DISP_OFFSET,0,_SET_COM_PIN_CFG,18,_SET_DISP_CLK_DIV,128,_SET_PRECHARGE,241,_SET_VCOM_DESEL,48,_SET_CONTRAST,255,_SET_ENTIRE_ON,_SET_NORM_INV,_SET_IREF_SELECT,48,_SET_CHARGE_PUMP,20,_SET_DISP|1):self.write_cmd(cmd)
 	def poweroff(self):self.write_cmd(_SET_DISP)
 	def poweron(self):self.write_cmd(_SET_DISP|1)
 	def setContrast(self,contrast):self.write_cmd(_SET_CONTRAST);self.write_cmd(contrast)
@@ -102,7 +102,7 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
 		for byte in range(WIDTH//8*HEIGHT):
 			for bit in range(8):
 				if data_piicodev[byte]&1<<bit!=0:
-					x_coordinate=(8-bit+byte*8)%WIDTH;y_coordinate=byte*8//WIDTH
+					x_coordinate=(7-bit+byte*8)%WIDTH;y_coordinate=byte*8//WIDTH
 					if x_coordinate<WIDTH and y_coordinate<HEIGHT:self.pixel(x_coordinate,y_coordinate,c)
 	class graph2D:
 		def __init__(self,originX=0,originY=HEIGHT-1,width=WIDTH,height=HEIGHT,minValue=0,maxValue=255,c=1,bars=_B):self.minValue=minValue;self.maxValue=maxValue;self.originX=originX;self.originY=originY;self.width=width;self.height=height;self.c=c;self.m=(1-height)/(maxValue-minValue);self.offset=originY-self.m*minValue;self.bars=bars;self.data=[]
