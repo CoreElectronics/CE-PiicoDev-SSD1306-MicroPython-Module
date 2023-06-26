@@ -268,7 +268,7 @@ class PiicoDev_SSD1306(framebuf.FrameBuffer):
         for byte in range(WIDTH // 8 * HEIGHT):
             for bit in range(8):
                 if data_piicodev[byte] & 1 << bit != 0:
-                    x_coordinate = ((8-bit) + (byte * 8)) % WIDTH
+                    x_coordinate = ((7-bit) + (byte * 8)) % WIDTH
                     y_coordinate = byte * 8 // WIDTH
                     if x_coordinate < WIDTH and y_coordinate < HEIGHT:
                         self.pixel(x_coordinate, y_coordinate, c)
