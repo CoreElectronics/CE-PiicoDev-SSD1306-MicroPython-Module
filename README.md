@@ -64,6 +64,20 @@ x2 | int | 0 - 127 | X2 coordinate
 y2 | int | 0 - 63 | Y2 coordinate
 c | int | 0 - 1 | Set the line to the given color (0: Black, 1: White)
 
+### `PiicoDev_SSD1306.print(txt, c, line_num=None, auto_scroll=True, delim=True, font_size=[8,8], spacing=[0,0,0])`
+Print text on the OLED, each subsequent call will increment the line number from the bottom of the display.
+
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+txt | string | Dependent | | Text to display.
+c | int | 0 - 1 | 1 | The colour of the printed text
+line_num | int | 0 - 8 (Dependent) | 0 | Optional: Prints on the requested line, default scrolls the text upwards
+blanking | bool | True/False | True | When enabled each print() call redraws the display
+delim | int | 0 - 16 | 1 | Set = 0/False to disable Delimiting
+font_size | list of Integers | [1 - Font Width,1 - Font Height] | [8,8] | Used in calculations for the line spacing
+spacing | list of Integers | [X-Starting Point, Y-Starting Point, Y-Spacing] | [0,0,0] | [X Starting Coordinate for all strings, Y Starting Coordinate for the first text write, Vertical spacing between Characters ]
+
+
 ### `PiicoDev_SSD1306.rect(x, y, w, h, c)`
 Draw a rectangle at the given location, size and color. Draws only a 1 pixel outline.
 
