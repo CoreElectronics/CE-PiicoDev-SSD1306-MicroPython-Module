@@ -14,8 +14,8 @@ Parameter | Type | Range | Default | Description
 --- | --- | --- | --- | ---
 bus | int | 0,1 | Raspberry Pi Pico: 0, Raspberry Pi: 1 | I2C Bus.  Ignored on Micro:bit
 freq | int | 100-1000000 | Device dependent | I2C Bus frequency (Hz).  Ignored on Raspberry Pi
-sda | Pin | Device Dependent | Device Dependent | I2C SDA Pin. Implemented on Raspberry Pi Pico only
-scl | Pin | Device Dependent | Device Dependent | I2C SCL Pin. Implemented on Raspberry Pi Pico only
+sda | machine.Pin | Device Dependent | Device Dependent | I2C SDA Pin. Implemented on Raspberry Pi Pico only
+scl | machine.Pin | Device Dependent | Device Dependent | I2C SCL Pin. Implemented on Raspberry Pi Pico only
 addr | int | 0x3C | 0x3C, 0x3D | This address needs to match the PiicoDev OLED SSD1306 hardware address configured by the jumper
 
 ### `PiicoDev_SSD1306.show()`
